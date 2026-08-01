@@ -42,7 +42,7 @@ RUN set -e; \
 # ------------------------------------------------
 FROM alpine:3.21 AS packager
 
-RUN apk add --no-cache tar zip bash coreutils binutils rpm-build
+RUN apk add --no-cache tar zip bash coreutils binutils rpm
 
 # 安装 nfpm (Go 静态二进制，无需依赖)
 ARG NFPM_VERSION=2.41.1
