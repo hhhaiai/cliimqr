@@ -423,16 +423,8 @@ https://qrdetector-api.cli.im/
 
 [PROTOCOL.md](./PROTOCOL.md)
 
-## 13. 支持
+## 13. 赞助 / 支持
 
-本工具由 **SimiRouter 中转站** 支持提供
-
-<p align="left">
-  <a href="https://api.dwchainless.com/">
-    <img src="./favicon.ico" width="32" height="32" alt="SimiRouter" style="vertical-align: middle;">
-  </a>
-  <a href="https://api.dwchainless.com/">&nbsp;https://api.dwchainless.com/</a>
-</p>
-
-**高可用 · 低延迟 · 透明计费**
-**一个 API 链接全球主流 AI 模型**
+| | |
+|---|---|
+| [![SimiRouter](./favicon.ico)](https://api.dwchainless.com/) | **SimiRouter 中转站** – 高可用、低延迟、透明计费<br>一个 API 链接全球主流 AI 模型<br><https://api.dwchainless.com/> |

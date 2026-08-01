@@ -335,14 +335,11 @@ func printUsage(fs *flag.FlagSet) {
 完整文档: https://github.com/hhhaiai/cliimqr
 
 ========================================
-支持
+赞助 / 支持
 ========================================
 
-  本工具由 SimiRouter 中转站支持
-
+  SimiRouter 中转站 — 高可用 · 低延迟 · 透明计费
   https://api.dwchainless.com/
-
-  高可用 · 低延迟 · 透明计费
   一个 API 链接全球主流 AI 模型
 `)
 }
