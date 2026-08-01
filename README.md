@@ -67,7 +67,7 @@ go build -trimpath -buildvcs=false -o cliimqr .
 查看程序版本：
 
 ```bash
-./cliimqr -app-version
+./cliimqr -version
 ```
 
 运行测试：
@@ -128,7 +128,7 @@ go test -race ./...
   -eye '方正' \
   -margin 4 \
   -level H \
-  -version 4 \
+  -qrversion 4 \
   -out dwchainless-minimal.png \
   -verify=true
 ```
@@ -149,7 +149,7 @@ go test -race ./...
   -eye-inner '#29B6F6' \
   -margin 4 \
   -level H \
-  -version 4 \
+  -qrversion 4 \
   -out dwchainless-logo.png \
   -verify=true
 ```
@@ -182,7 +182,7 @@ curl -L \
   -eye-inner '#29B6F6' \
   -margin 4 \
   -level H \
-  -version 4 \
+  -qrversion 4 \
   -out simiai-api-qr.png \
   -verify=true
 ```
@@ -194,7 +194,7 @@ curl -L \
   -text 'https://api.dwchainless.com/' \
   -logo-url 'https://example.com/logo.png' \
   -level H \
-  -version 4 \
+  -qrversion 4 \
   -out remote-logo-qr.png
 ```
 
@@ -274,7 +274,7 @@ https://api.dwchainless.com/
 
 | 参数 | 默认值 | 说明 |
 |---|---:|---|
-| `-app-version` | `false` | 显示程序版本并退出 |
+| `-version` / `-v` | — | 显示程序版本信息（`cliimqr 1.1 darwin/arm64`） |
 | `-interactive` | `false` | 强制进入终端向导；完全不带参数时也会自动进入 |
 | `-text` | 无 | 二维码编码内容；命令行模式必填 |
 | `-logo` | 无 | 本地 Logo 文件路径 |
@@ -381,7 +381,7 @@ Logo 场景优先使用本地文件：
 提高 QR 版本，例如：
 
 ```bash
--version 8
+-qrversion 8
 ```
 
 Logo 较大或样式复杂时使用：

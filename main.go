@@ -23,15 +23,17 @@ import (
 )
 
 const (
-	appVersion    = "1.1"
 	homeURL       = "https://cli.im/"
 	saveURL       = "https://cli.im/Apis/QrCode/saveStatic"
 	uploadURL     = "https://upload-api.cli.im/upload?kid=cliim"
 	paintURL      = "https://qr.api.cli.im/create/paintLabelByParam"
 	detectURL     = "https://qrdetector-api.cli.im/v1/detect_binary"
-	defaultUA     = "Mozilla/5.0 (compatible; cliimqr/" + appVersion + ")"
 	defaultRefURL = "https://cli.im/text/other"
 )
+
+var appVersion = "1.1"
+
+var defaultUA = "Mozilla/5.0 (compatible; cliimqr/" + appVersion + ")"
 
 var dotTypes = map[string]string{
 	"普通": "0", "液化": "8", "圆液化": "29", "条纹": "30",
