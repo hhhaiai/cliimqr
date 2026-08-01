@@ -170,7 +170,7 @@ for arch in amd64 386 arm64 arm; do
 
   # rpmbuild 需要特定目录结构
   rpmdir="${tmpdir}/rpmbuild"
-  mkdir -p "${rpmdir}/{BUILD,RPMS,SOURCES,SPECS,SRPMS}"
+  mkdir -p "${rpmdir}/BUILD" "${rpmdir}/RPMS" "${rpmdir}/SOURCES" "${rpmdir}/SPECS" "${rpmdir}/SRPMS"
 
   # 准备源码目录
   buildroot="${tmpdir}/cliimqr-${VERSION}"
