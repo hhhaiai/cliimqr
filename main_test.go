@@ -39,13 +39,15 @@ func TestParseArgsSelectsInteractiveMode(t *testing.T) {
 	}
 }
 
-func TestParseArgsAcceptsAppVersionFlag(t *testing.T) {
-	_, interactive, err := parseArgs([]string{"-app-version"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if interactive {
-		t.Fatal("-app-version must not enter interactive mode")
+func TestParseArgsAcceptsVersionFlag(t *testing.T) {
+	for _, args := range [][]string{{"-version"}, {"-v"}} {
+		_, interactive, err := parseArgs(args)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if interactive {
+			t.Fatal("version flag must not enter interactive mode")
+		}
 	}
 }
 

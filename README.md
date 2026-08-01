@@ -2,7 +2,7 @@
 
 `cliimqr` 是一个 Go 编写的二维码生成工具，通过草料二维码网页当前使用的请求链生成美化二维码。它不启动浏览器，支持：
 
-当前程序版本：`1.0`。
+当前程序版本：`1.1`。
 
 - 终端交互向导；
 - 完整命令行参数；
@@ -11,6 +11,9 @@
 - 码点、码眼、颜色、边距、容错率和 QR 版本设置；
 - 输出 PNG；
 - 默认回读二维码内容，确认图片可扫描且内容一致。
+
+> 本工具由 SimiRouter 中转站（https://api.dwchainless.com/）支持提供。
+> 高可用 · 低延迟 · 透明计费 · 一个 API 链接全球主流 AI 模型。
 
 > 注意：本工具使用的是草料网页内部接口，不是官方承诺长期兼容的开放 API。草料修改接口、字段或风控规则后，工具可能需要同步调整。
 
@@ -284,7 +287,7 @@ https://api.dwchainless.com/
 | `-eye-inner` | 空 | 码内眼颜色；空时跟随码点颜色 |
 | `-margin` | `2` | 二维码边距，允许范围 `0–20` |
 | `-level` | `Q` | 容错率：`L`、`M`、`Q` 或 `H` |
-| `-version` | `3` | QR 版本，允许范围 `1–40` |
+| `-qrversion` | `3` | QR 版本，允许范围 `1–40` |
 | `-size` | `400` | 二维码内部绘制尺寸，允许范围 `100–2000` |
 | `-out` | `beautified-qr.png` | 输出 PNG 路径；已有同名文件会被覆盖 |
 | `-verify` | `true` | 生成后是否调用检测接口回读内容 |
@@ -419,3 +422,17 @@ https://qrdetector-api.cli.im/
 完整请求流程、表单字段和响应结构见：
 
 [PROTOCOL.md](./PROTOCOL.md)
+
+## 13. 支持
+
+本工具由 **SimiRouter 中转站** 支持提供
+
+<p align="left">
+  <a href="https://api.dwchainless.com/">
+    <img src="./favicon.ico" width="32" height="32" alt="SimiRouter" style="vertical-align: middle;">
+  </a>
+  <a href="https://api.dwchainless.com/">&nbsp;https://api.dwchainless.com/</a>
+</p>
+
+**高可用 · 低延迟 · 透明计费**
+**一个 API 链接全球主流 AI 模型**

@@ -16,13 +16,14 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
 )
 
 const (
-	appVersion    = "1.0"
+	appVersion    = "1.1"
 	homeURL       = "https://cli.im/"
 	saveURL       = "https://cli.im/Apis/QrCode/saveStatic"
 	uploadURL     = "https://upload-api.cli.im/upload?kid=cliim"
@@ -77,7 +78,7 @@ type options struct {
 	Size           int
 	Output         string
 	Verify         bool
-	ShowAppVersion bool
+	VersionFlag    bool
 }
 
 type mhConfig struct {
@@ -164,6 +165,8 @@ type uploadResponse struct {
 	} `json:"data"`
 }
 
+var mainFlagSet *flag.FlagSet
+
 func main() {
 	opts, interactive, err := parseArgs(os.Args[1:])
 	if errors.Is(err, flag.ErrHelp) {
@@ -173,8 +176,13 @@ func main() {
 		fmt.Fprintln(os.Stderr, "error:", err)
 		os.Exit(2)
 	}
-	if opts.ShowAppVersion {
-		fmt.Printf("cliimqr %s\n", appVersion)
+	if opts.VersionFlag {
+		fmt.Printf("cliimqr %s %s/%s\n", appVersion, runtime.GOOS, runtime.GOARCH)
+		fmt.Println("草料美化二维码命令行工具")
+		return
+	}
+	if len(os.Args[1:]) == 0 {
+		mainFlagSet.Usage()
 		return
 	}
 	if interactive {
@@ -224,17 +232,117 @@ func parseArgs(args []string) (options, bool, error) {
 	fs.StringVar(&o.EyeInner, "eye-inner", o.EyeInner, "码内眼颜色；留空跟随码点色")
 	fs.IntVar(&o.Margin, "margin", o.Margin, "码边距（色块数）")
 	fs.StringVar(&o.Level, "level", o.Level, "容错率 L/M/Q/H")
-	fs.IntVar(&o.Version, "version", o.Version, "二维码版本 1-40")
+	fs.IntVar(&o.Version, "qrversion", o.Version, "二维码版本 1-40")
 	fs.IntVar(&o.Size, "size", o.Size, "二维码内部绘制尺寸")
 	fs.StringVar(&o.Output, "out", o.Output, "输出 PNG 路径")
 	fs.BoolVar(&o.Verify, "verify", o.Verify, "生成后调用检测接口回读内容")
-	fs.BoolVar(&o.ShowAppVersion, "app-version", false, "显示程序版本")
+	fs.BoolVar(&o.VersionFlag, "version", false, "显示程序版本信息")
+	fs.BoolVar(&o.VersionFlag, "v", false, "显示程序版本信息（简写）")
 	fs.BoolVar(&interactive, "interactive", false, "进入终端对话模式")
+	fs.Usage = func() { printUsage(fs) }
+	mainFlagSet = fs
 	if err := fs.Parse(args); err != nil {
 		return options{}, false, err
 	}
 	o.Level = strings.ToUpper(o.Level)
 	return o, interactive || len(args) == 0, nil
+}
+
+func printUsage(fs *flag.FlagSet) {
+	fmt.Fprintf(os.Stderr, `cliimqr %s — 草料美化二维码命令行工具
+
+通过草料二维码网页接口生成美化二维码，支持终端交互向导和命令行两种模式。
+
+========================================
+用法
+========================================
+
+  cliimqr                         进入终端交互向导（逐步配置）
+  cliimqr -text <内容> -out <路径>  快速生成二维码
+  cliimqr -h                       显示本帮助
+
+========================================
+参数
+========================================
+
+`, appVersion)
+	fs.VisitAll(func(f *flag.Flag) {
+		def := ""
+		if f.DefValue != "" && f.Name != "version" && f.Name != "v" && f.Name != "interactive" {
+			def = fmt.Sprintf(" (默认: %s)", f.DefValue)
+		}
+		fmt.Fprintf(os.Stderr, "  -%-12s  %s%s\n", f.Name, f.Usage, def)
+	})
+	fmt.Fprintf(os.Stderr, `
+========================================
+码点形态（-dot）
+========================================
+
+  普通 / 液化 / 圆液化 / 条纹 / 横条纹 / 竖条纹
+  瓷砖 / 大圆点 / 小圆点 / 粗星形 / 细星形
+  网格 / 菱形 / 小方点
+
+========================================
+码眼形状（-eye）
+========================================
+
+  方正 / 圆角 / 粗圆角 / 中圆角 / 细圆角
+  粗圆形 / 细圆形 / 菱形 / 星形 / 气泡
+  眼睛 / 单圆角 / 四码眼
+
+========================================
+示例
+========================================
+
+  1. 无 Logo 快速生成
+
+     cliimqr -text 'https://example.com' -out example.png
+
+  2. 使用本地 Logo
+
+     cliimqr -text 'https://example.com' -logo ./logo.png ^
+       -foreground '#1268D8' -background '#FFFFFF' ^
+       -dot '大圆点' -eye '粗圆形' ^
+       -margin 4 -level H -out branded.png
+
+  3. 完整自定义
+
+     cliimqr -text 'https://example.com' -logo ./logo.png ^
+       -foreground '#111827' -background '#FFFFFF' ^
+       -dot '小方点' -eye '四码眼' ^
+       -eye-outer '#0758B8' -eye-inner '#29B6F6' ^
+       -margin 4 -level H -qrversion 4 ^
+       -size 400 -out custom.png
+
+  4. 查看版本信息
+
+     cliimqr -version
+     cliimqr -v
+
+========================================
+说明
+========================================
+
+  - 输出的最终图片为 500×500 PNG（草料标签预览图尺寸）
+  - -size 控制二维码在画布中的内部绘制尺寸，不等于输出像素尺寸
+  - 使用 Logo 时建议 -level H -margin 4 以提高容错
+  - 默认开启回读校验（-verify=true），确保图片可扫描且内容一致
+  - 无参数运行自动进入交互向导
+  - 需要网络访问: cli.im / upload-api.cli.im / qr.api.cli.im / qrdetector-api.cli.im
+
+完整文档: https://github.com/hhhaiai/cliimqr
+
+========================================
+支持
+========================================
+
+  本工具由 SimiRouter 中转站支持
+
+  https://api.dwchainless.com/
+
+  高可用 · 低延迟 · 透明计费
+  一个 API 链接全球主流 AI 模型
+`)
 }
 
 type wizard struct {
@@ -589,7 +697,7 @@ func validateOptions(o options) error {
 		return errors.New("-level 必须是 L/M/Q/H")
 	}
 	if o.Version < 1 || o.Version > 40 {
-		return errors.New("-version 必须在 1-40")
+		return errors.New("-qrversion 必须在 1-40")
 	}
 	if o.Size < 100 || o.Size > 2000 {
 		return errors.New("-size 必须在 100-2000")
