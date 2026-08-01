@@ -11,61 +11,41 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        goos: [linux, darwin, windows]
-        goarch: [amd64, 386, arm64, arm]
-        exclude:
-          - goos: darwin
-            goarch: 386
-          - goos: darwin
-            goarch: arm
-          - goos: windows
-            goarch: arm
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-          check-latest: true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Run tests
-        run: go test -race ./...
-
-      - name: Build
+      - name: Build and package with Docker
         run: |
           tag="${GITHUB_REF_NAME#v}"
-          os="${{ matrix.goos }}"
-          arch="${{ matrix.goarch }}"
-          ext=""
-          [ "$os" = "windows" ] && ext=".exe"
-          binary="cliimqr${ext}"
+          build_number="${{ github.run_number }}"
+          echo "==> Building cliimqr ${tag} (build ${build_number})"
 
-          ldflags="-s -w"
-          [ -n "$tag" ] && ldflags="${ldflags} -X main.appVersion=${tag}"
+          # 构建 Docker 镜像
+          docker build \
+            --build-arg "VERSION=${tag}" \
+            --build-arg "BUILD=${build_number}" \
+            -t cliimqr-builder .
 
-          GOOS="$os" GOARCH="$arch" go build -trimpath -buildvcs=false -ldflags="${ldflags}" -o "${binary}" .
+          # 运行容器生成产物到 release/ 目录
+          mkdir -p release
+          docker run --rm \
+            -v "$(pwd)/release:/out" \
+            -e "VERSION=${tag}" \
+            -e "BUILD=${build_number}" \
+            cliimqr-builder
 
-          if [ "$os" = "windows" ]; then
-            archive="cliimqr_${tag}_${os}_${arch}.zip"
-            zip -q "${archive}" "${binary}"
-          else
-            archive="cliimqr_${tag}_${os}_${arch}.tar.gz"
-            tar czf "${archive}" "${binary}"
-          fi
-          rm -f "${binary}"
-          echo "archive=${archive}" >> "$GITHUB_OUTPUT"
-          echo "sha256=$(sha256sum "${archive}" | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
-        id: build
+          # 将产物列表输出到 GITHUB_ENV
+          echo "ASSETS=$(ls release/ | tr '\n' ' ')" >> "$GITHUB_ENV"
 
-      - name: Upload release asset
+      - name: Upload release assets
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ steps.build.outputs.archive }}
+          files: release/*
           generate_release_notes: true
           fail_on_unmatched_files: false

@@ -31,7 +31,7 @@ const (
 	defaultRefURL = "https://cli.im/text/other"
 )
 
-var appVersion = "1.2"
+var appVersion = "1.3"
 
 var defaultUA = "Mozilla/5.0 (compatible; cliimqr/" + appVersion + ")"
 
